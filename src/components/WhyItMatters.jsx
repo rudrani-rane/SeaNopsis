@@ -3,19 +3,19 @@ import { motion } from 'framer-motion';
 
 const reasons = [
   {
-    icon: '📊',
+    icon: '',
     title: 'Evidence-Based Policy',
-    desc: 'Unify datasets to support sustainable fisheries and conservation.',
+    desc: 'Integrate diverse datasets to guide sustainable fisheries, conservation planning, and informed decision-making.',
   },
   {
-    icon: '⚓',
+    icon: '',
     title: 'Operational Decisions',
-    desc: 'Guide fleets with forecasts of species and ocean conditions.',
+    desc: 'Provide fleets with real-time forecasts of species presence and ocean conditions to optimize efficiency and sustainability.',
   },
   {
-    icon: '🧪',
+    icon: '',
     title: 'Accelerate Research',
-    desc: 'AI tools boost discovery from eDNA to otolith morphology.',
+    desc: 'Accelerate discovery by analyzing everything from eDNA signals to otolith morphology, unlocking new insights into marine life.',
   },
 ];
 

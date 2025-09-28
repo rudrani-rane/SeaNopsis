@@ -3,29 +3,29 @@ import { motion } from 'framer-motion';
 
 const cards = [
   {
-    icon: '🐟',
+    icon: '',
     title: 'Species Insights',
-    desc: 'Discover distribution and seasonal patterns across regions.',
+    desc: 'Explore species distributions across regions and track how seasonal changes shape ecosystems.',
   },
   {
-    icon: '🧬',
+    icon: '',
     title: 'eDNA Analysis',
-    desc: 'Track biodiversity shifts using genetic signals.',
+    desc: 'Use genetic signals in the water to monitor biodiversity, detect rare species, and reveal ecosystem health.',
   },
   {
-    icon: '🧠',
+    icon: '',
     title: 'AI Classifier',
-    desc: 'Identify species and trends from images and audio.',
+    desc: 'Harness advanced AI to identify species from images and sounds, uncovering population shifts and ecological trends.',
   },
   {
-    icon: '🌊',
+    icon: '',
     title: 'Oceanographic Trends',
-    desc: 'Monitor salinity, temperature and currents over time.',
+    desc: 'Monitor long-term changes in salinity, temperature, and currents to understand climate and habitat dynamics.',
   },
   {
-    icon: '🗺️',
+    icon: '',
     title: 'Spatial Explorer',
-    desc: 'Map hotspots and protected areas intuitively.',
+    desc: 'Map biodiversity hotspots, migration routes, and protected areas to guide conservation and management.',
   },
 ];
 

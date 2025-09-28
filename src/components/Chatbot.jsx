@@ -1,15 +1,29 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const mockResponder = (text) => {
-  const responses = [
-    'Salinity around the west coast averages 35 PSU. Sardinella sightings are frequent.',
-    'eDNA indicates increasing biodiversity near coral patches this season.',
-    'AI classifier: High confidence of Indian mackerel in recent trawl images.',
-    'Otolith morphology suggests two distinct stock groups in the region.',
-  ];
-  const index = Math.abs(text.length + responses.length) % responses.length;
-  return responses[index];
+const callChatbotAPI = async (userMessage) => {
+  try {
+    const response = await fetch('http://localhost:8000/chatbot', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: userMessage,
+        user_id: 'anonymous', // You can add user authentication later
+      }),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data.response || data.message || data.reply || 'Sorry, I could not process your request.';
+  } catch (error) {
+    console.error('Chatbot API error:', error);
+    return 'Sorry, I encountered an error. Please check if the backend is running.';
+  }
 };
 
 const TypingText = ({ text }) => {
@@ -18,9 +32,12 @@ const TypingText = ({ text }) => {
     setDisplayed('');
     let i = 0;
     const id = setInterval(() => {
-      setDisplayed((prev) => prev + text[i]);
-      i += 1;
-      if (i >= text.length) clearInterval(id);
+      if (i < (text?.length || 0)) {
+        setDisplayed((prev) => prev + text[i]);
+        i += 1;
+      } else {
+        clearInterval(id);
+      }
     }, 18);
     return () => clearInterval(id);
   }, [text]);
@@ -32,23 +49,36 @@ const Chatbot = () => {
     { id: 0, role: 'bot', text: 'Ask me about salinity, species or datasets.' },
   ]);
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const listRef = useRef(null);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
 
-  const send = () => {
+  const send = async () => {
     const trimmed = input.trim();
-    if (!trimmed) return;
+    if (!trimmed || isLoading) return;
+    
     const userMsg = { id: Date.now(), role: 'user', text: trimmed };
     setMessages((m) => [...m, userMsg, { id: Date.now() + 1, role: 'bot-typing', text: '...' }]);
     setInput('');
+    setIsLoading(true);
 
-    setTimeout(() => {
-      const reply = mockResponder(trimmed);
-      setMessages((m) => m.filter((x) => x.role !== 'bot-typing').concat({ id: Date.now(), role: 'bot', text: reply }));
-    }, 700);
+    try {
+      const reply = await callChatbotAPI(trimmed);
+      setMessages((m) => 
+        m.filter((x) => x.role !== 'bot-typing')
+         .concat({ id: Date.now(), role: 'bot', text: reply })
+      );
+    } catch (error) {
+      setMessages((m) => 
+        m.filter((x) => x.role !== 'bot-typing')
+         .concat({ id: Date.now(), role: 'bot', text: 'Sorry, something went wrong. Please try again.' })
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const onKey = (e) => {
@@ -99,9 +129,10 @@ const Chatbot = () => {
               />
               <button
                 onClick={send}
-                className="rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-4 py-2 font-medium text-white shadow-lg shadow-teal-500/30 transition hover:from-teal-400 hover:to-cyan-400"
+                disabled={isLoading}
+                className="rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-4 py-2 font-medium text-white shadow-lg shadow-teal-500/30 transition hover:from-teal-400 hover:to-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Send
+                {isLoading ? 'Sending...' : 'Send'}
               </button>
             </div>
           </div>
